@@ -1,0 +1,38 @@
+[img,path]=uigetfile('*.jpg','select a input image');
+    str=strcat(path,img);
+    img=imread(str);
+    
+    bw = im2bw(img,0.7);
+    label=bwlabel(bw);
+    stats=regionprops(label,'Solidity','Area');
+    density=[stats.Solidity];
+    area=[stats.Area];
+    
+    a = density > 0.5;
+    b = max(area(a));
+    c  = find( area == b);
+     tumor=ismember(label,c);
+     
+     
+     se= strel('square',5);
+     tumor=imdilate(tumor,se);
+     
+     figure(2)
+     
+     subplot(1,3,1)
+     imshow(img,[])
+     title('Brain')
+     
+     subplot(1,3,2)
+     imshow(tumor,[])
+     title('Tumor Alone')
+     
+     [B,L]  = bwboundaries(tumor,'noholes');
+subplot(1,3,3)
+imshow(img,[])
+hold on
+for i = 1:length(B)
+    plot (B{i} (:,2), B{i}(:,1),'y' , 'linewidth',1.45)
+end
+title('Detected Tumors')
+hold off
